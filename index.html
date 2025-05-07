@@ -1,151 +1,472 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
-    <meta charset="UTF-8">
-    <title>我们的浪漫回忆</title>
-    <!-- 引入Swiper轮播图库 -->
-    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>520情人节快乐</title>
     <style>
+        /* 重置和基础样式 */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        body {
-            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
-            font-family: 'Microsoft YaHei', sans-serif;
+        body,
+        html {
+            margin: 0;
             height: 100vh;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #fff;
+            overflow-x: hidden;
         }
 
-        /* 旋转木马轮播图样式 */
+        /* 引导层 */
+        #guide {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(255, 182, 193, 1);
+            /* 浅粉色半透明 */
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            user-select: none;
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-shadow: 0 0 5px #fff;
+        }
+
+        #guide p {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            color: #b22222;
+            font-weight: bold;
+        }
+
+        #guide button {
+            background: #ff69b4;
+            border: none;
+            border-radius: 25px;
+            padding: 0.8rem 2rem;
+            font-size: 1.1rem;
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(255, 105, 180, 0.4);
+            transition: background-color 0.3s ease;
+            user-select: none;
+        }
+
+        #guide button:active {
+            background-color: #e0559c;
+        }
+
+        /* 主体内容 */
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 1rem 1rem 3rem;
+            text-align: center;
+        }
+
+        main h1 {
+            font-size: 2.4rem;
+            color: #d6336c;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        main h2 {
+            font-size: 1.4rem;
+            color: #a8325a;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        main p {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 2rem;
+            padding: 0 10px;
+        }
+
+        /* Swiper容器 */
         .swiper-container {
             width: 100%;
-            padding-top: 50px;
-            padding-bottom: 50px;
+            max-width: 800px;
+            height: 800px;
+            margin: 0 auto 2rem;
+            user-select: none;
         }
 
         .swiper-slide {
             background-position: center;
             background-size: cover;
-            width: 400px;
-            height: 500px;
+            width: 220px;
+            height: 800px;
             border-radius: 15px;
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
-            transition: 0.5s;
+            overflow: hidden;
+            box-shadow: 0 6px 15px rgba(255, 105, 180, 0.3);
+            transition: transform 0.3s ease;
         }
 
-        /* 回忆卡片内容 */
-        .memory-card {
-            position: relative;
+        .swiper-slide img {
+            width: 100%;
             height: 100%;
-            color: white;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.5);
+            object-fit: cover;
+            display: block;
             border-radius: 15px;
         }
 
-        .memory-card h3 {
-            font-size: 24px;
-            margin-bottom: 15px;
+        /* Canvas画布 */
+        #sakura {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
         }
 
-        /* 音乐播放器样式 */
-        #music-player {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 999;
+        /* 音频和信件链接 */
+        audio {
+            display: none;
         }
 
-        /* 文件下载区 */
-        .download-section {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        #love-letter,
+        #start-btn-main {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.6rem 1.2rem;
+            background: #ff69b4;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            box-shadow: 0 4px 8px rgba(255, 105, 180, 0.4);
+            transition: background-color 0.3s ease;
+            user-select: none;
+        }
+
+        #love-letter:hover,
+        #love-letter:focus {
+            background-color: #e0559c;
+            outline: none;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            main h1 {
+                font-size: 1.8rem;
+            }
+
+            main h2 {
+                font-size: 1.1rem;
+            }
+
+            main p {
+                font-size: 0.9rem;
+            }
+
+            .swiper-container {
+                height: 700px;
+            }
+
+            .swiper-slide {
+                width: 160px;
+                height: 700px;
+            }
+
+            #guide p {
+                font-size: 1rem;
+            }
+
+            #guide button {
+                font-size: 1rem;
+                padding: 0.7rem 1.5rem;
+            }
+
+            #love-letter {
+                font-size: 0.9rem;
+                padding: 0.5rem 1rem;
+            }
         }
     </style>
+
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
 </head>
+
 <body>
-    <!-- 旋转木马轮播图 -->
-    <div class="swiper-container">
-        <div class="swiper-wrapper">
-            <!-- 这里替换成你们的回忆照片 -->
-            <div class="swiper-slide" style="background-image: url('photo1.jpg')">
-                <div class="memory-card">
-                    <h3>第一次相遇</h3>
-                    <p>那天阳光正好，你的笑容点亮了我的世界...</p>
+    <!-- 引导层 -->
+    <div id="guide">
+        <p>点击开始播放我们幸福的专属BGM</p>
+        <button id="start-btn">开始</button>
+    </div>
+
+    <!-- 樱花动画画布 -->
+    <canvas id="sakura"></canvas>
+
+    <main>
+        <h1>520情人节快乐</h1>
+        <h2>送给我最爱的你</h2>
+        <p>幸福❤起点：2025：4月23日</p>
+
+        <!-- Swiper轮播 -->
+        <div class="swiper-container">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <img src="LoveHouse/photo1.jpg" alt="照片1" />
+                </div>
+                <div class="swiper-slide">
+                    <img src="LoveHouse/photo2.jpg" alt="照片2" />
+                </div>
+                <div class="swiper-slide">
+                    <img src="LoveHouse/photo3.jpg" alt="照片3" />
+                </div>
+                <div class="swiper-slide">
+                    <img src="LoveHouse/photo4.jpg" alt="照片4" />
                 </div>
             </div>
-            <div class="swiper-slide" style="background-image: url('photo2.jpg')">
-                <div class="memory-card">
-                    <h3>第一次旅行</h3>
-                    <p>海风记得我们共同许下的诺言...</p>
-                </div>
-            </div>
-            <!-- 继续添加更多回忆 -->
+            <div class="swiper-pagination"></div>
         </div>
-        <!-- 添加分页器 -->
-        <div class="swiper-pagination"></div>
-    </div>
 
-    <!-- 音乐播放器 -->
-    <audio id="music-player" controls autoplay>
-        <!-- 替换成你们的歌曲 -->
-        <source src="your-song.mp3" type="audio/mpeg">
-        您的浏览器不支持音频播放
-    </audio>
+        <button id="start-btn-main">开始浪漫之旅</button>
+        <!-- 爱情信件下载 -->
+        <a href="LoveHouse/记录本.docx" id="love-letter" download>下载爱情信件</a>
 
-    <!-- 文件下载区 -->
-    <div class="download-section">
-        <h3>给你的特别礼物</h3>
-        <!-- 替换成你的文件 -->
-        <a href="your-file.pdf" download>点击下载惊喜</a>
-    </div>
+        <!-- 音频 -->
+        <audio id="audio" src="LoveHouse/your-song.wav" preload="auto"></audio>
+        <!-- 心愿墙容器 -->
+        <section id="wish-wall"
+            style="max-width: 600px; margin: 2rem auto; padding: 1rem; background: rgba(255,182,193,0.2); border-radius: 15px; color: #b22222;">
+            <h2 style="text-align:center; margin-bottom: 1rem;">我们的心愿墙</h2>
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                <input type="text" id="wish-input" placeholder="写下你的心愿..."
+                    style="flex:1; padding: 0.5rem; border-radius: 8px; border: 1px solid #b22222; font-size: 1rem;" />
+                <button id="add-wish-btn"
+                    style="background:#ff69b4; border:none; border-radius: 8px; padding: 0.5rem 1rem; color:#fff; cursor:pointer; font-weight: 600;">添加</button>
+            </div>
+            <div id="wish-list" style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;"></div>
+        </section>
+    </main>
 
-    <!-- 引入JS库 -->
-    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <!-- Swiper JS -->
+    <script src="https://unpkg.com/swiper@9/swiper-bundle.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/swiper@9/swiper-bundle.min.css" />
+
     <script>
-        // 初始化旋转木马轮播图
-        var swiper = new Swiper('.swiper-container', {
-            effect: 'coverflow',
+        // 初始化Swiper
+        const swiper = new Swiper(".swiper-container", {
+            effect: "coverflow",
             grabCursor: true,
             centeredSlides: true,
-            slidesPerView: 'auto',
+            slidesPerView: "auto",
             coverflowEffect: {
-                rotate: 30,
+                rotate: 20,
                 stretch: 0,
-                depth: 200,
-                modifier: 1,
+                depth: 100,
+                modifier: 2,
                 slideShadows: true,
             },
             pagination: {
-                el: '.swiper-pagination',
+                el: ".swiper-pagination",
+                clickable: true,
             },
             loop: true,
             autoplay: {
-                delay: 2500,
+                delay: 3500,
                 disableOnInteraction: false,
             },
         });
 
-        // 自动播放音乐（注意浏览器自动播放限制）
-        document.addEventListener('DOMContentLoaded', function() {
-            var audio = document.getElementById('music-player');
-            audio.play().catch(() => {
-                // 如果自动播放被阻止，显示提示
-                alert('请点击页面任意位置播放音乐');
+        // 樱花动画
+        const canvas = document.getElementById("sakura");
+        const ctx = canvas.getContext("2d");
+        let width, height;
+
+        function resizeCanvas() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+        }
+        resizeCanvas();
+        window.addEventListener("resize", resizeCanvas);
+
+        class SakuraPetal {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height - height;
+                this.size = 10 + Math.random() * 15;
+                this.speedY = 1 + Math.random() * 2;
+                this.speedX = (Math.random() - 0.5) * 1.5;
+                this.angle = Math.random() * 2 * Math.PI;
+                this.angleSpeed = 0.01 + Math.random() * 0.02;
+                this.opacity = 0.6 + Math.random() * 0.4;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.angle += this.angleSpeed;
+                if (this.y > height) {
+                    this.reset();
+                    this.y = -this.size;
+                }
+                if (this.x > width) this.x = 0;
+                else if (this.x < 0) this.x = width;
+            }
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle);
+                ctx.fillStyle = `rgba(255,182,193,${this.opacity})`;
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.bezierCurveTo(
+                    this.size / 2,
+                    -this.size / 2,
+                    this.size,
+                    this.size / 3,
+                    0,
+                    this.size
+                );
+                ctx.bezierCurveTo(
+                    -this.size,
+                    this.size / 3,
+                    -this.size / 2,
+                    -this.size / 2,
+                    0,
+                    0
+                );
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        const petals = [];
+        const petalCount = 40;
+        for (let i = 0; i < petalCount; i++) {
+            petals.push(new SakuraPetal());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            petals.forEach((petal) => {
+                petal.update();
+                petal.draw();
             });
+            requestAnimationFrame(animate);
+        }
+
+        // 音频播放控制
+        const guide = document.getElementById("guide");
+        const startBtn = document.getElementById("start-btn");
+        const audio = document.getElementById("audio");
+
+        startBtn.addEventListener("click", () => {
+            audio.play().then(() => {
+                guide.style.display = "none";
+                animate();
+            }).catch((err) => {
+                alert("音频播放失败，请检查浏览器设置或点击页面以允许播放。");
+                console.error(err);
+            });
+            audio.loop = true;  // 设置循环播放
+        });
+        // 点击按钮跳转到烟花页面
+        const startBtnMain = document.getElementById("start-btn-main");
+
+        startBtnMain.addEventListener("click", () => {
+            window.location.href = 'LoveHouse/fireworks.html';
         });
 
-        // 点击页面继续播放音乐
-        document.body.addEventListener('click', function() {
-            document.getElementById('music-player').play();
+        // <!-- 心愿墙容器 -->
+        const wishInput = document.getElementById('wish-input');
+        const addWishBtn = document.getElementById('add-wish-btn');
+        const wishList = document.getElementById('wish-list');
+
+        // 从localStorage加载心愿
+        let wishes = JSON.parse(localStorage.getItem('wishes')) || [];
+
+        // 渲染心愿列表
+        function renderWishes() {
+            wishList.innerHTML = '';
+            wishes.forEach((wish, index) => {
+                const card = document.createElement('div');
+                card.style.background = 'rgba(255, 105, 180, 0.2)';
+                card.style.padding = '1rem';
+                card.style.borderRadius = '12px';
+                card.style.minWidth = '150px';
+                card.style.position = 'relative';
+                card.style.boxShadow = '0 4px 8px rgba(255, 105, 180, 0.3)';
+                card.style.color = '#b22222';
+                card.style.fontWeight = '600';
+                card.style.cursor = 'default';
+                card.style.userSelect = 'none';
+                card.style.transition = 'transform 0.3s ease';
+                card.textContent = wish;
+
+                // 删除按钮
+                const delBtn = document.createElement('button');
+                delBtn.textContent = '×';
+                delBtn.style.position = 'absolute';
+                delBtn.style.top = '5px';
+                delBtn.style.right = '8px';
+                delBtn.style.background = 'transparent';
+                delBtn.style.border = 'none';
+                delBtn.style.color = '#b22222';
+                delBtn.style.fontSize = '1.2rem';
+                delBtn.style.cursor = 'pointer';
+                delBtn.title = '删除心愿';
+
+                delBtn.addEventListener('click', () => {
+                    wishes.splice(index, 1);
+                    localStorage.setItem('wishes', JSON.stringify(wishes));
+                    renderWishes();
+                });
+
+                card.appendChild(delBtn);
+                wishList.appendChild(card);
+            });
+        }
+
+        // 添加心愿
+        addWishBtn.addEventListener('click', () => {
+            const wishText = wishInput.value.trim();
+            if (wishText) {
+                wishes.push(wishText);
+                localStorage.setItem('wishes', JSON.stringify(wishes));
+                wishInput.value = '';
+                renderWishes();
+            } else {
+                alert('请输入心愿内容哦~');
+            }
         });
+
+        // 支持回车键添加
+        wishInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                addWishBtn.click();
+            }
+        });
+
+        // 页面加载时渲染
+        renderWishes();
     </script>
 </body>
+
 </html>
